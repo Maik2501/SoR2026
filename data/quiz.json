@@ -1,0 +1,253 @@
+{
+  "title": "Schule ohne Rassismus – Schule mit Courage",
+  "subtitle": "Ein interaktives Quiz",
+  "slides": [
+    {
+      "id": 1,
+      "type": "title",
+      "title": "Schule ohne Rassismus\nSchule mit Courage",
+      "subtitle": "Teil 1: Historische Wurzeln des Rassismus"
+    },
+
+    {
+      "id": 2,
+      "type": "estimation",
+      "question": "Wann wurde der transatlantische Sklavenhandel erstmals dokumentiert?",
+      "image": "/images/Sklavenhandel.jpg",
+      "answer": 1501,
+      "unit": "",
+      "hint": "Gib eine Jahreszahl ein",
+      "tolerance": 200,
+      "timeLimit": 30,
+      "points": 100
+    },
+
+    {
+      "id": 3,
+      "type": "info",
+      "title": "Der Transatlantische Sklavenhandel",
+      "image": "/images/Sklavenhandel.jpg",
+      "content": "Der transatlantische Sklavenhandel begann 1501, als die ersten dokumentierten Verschleppungen von Menschen aus Afrika nach Amerika stattfanden. Über mehr als 350 Jahre wurden schätzungsweise 12,5 Millionen Menschen aus Afrika verschleppt.\n\nDieser Handel war nicht nur ein Verbrechen gegen die Menschlichkeit — er legte auch das Fundament für rassistische Strukturen, die bis heute nachwirken. Um die Versklavung zu rechtfertigen, wurde eine Ideologie der Überlegenheit weißer Menschen konstruiert. Pseudowissenschaftliche 'Rassentheorien' entstanden, die Menschen nach Hautfarbe in eine Hierarchie einordneten.\n\nDiese Denkweisen verschwanden nicht mit dem Ende der Sklaverei, sondern wirkten in Kolonialismus, Apartheid und strukturellem Rassismus bis in die Gegenwart fort."
+    },
+
+    {
+      "id": 4,
+      "type": "map",
+      "question": "Wo fand die sogenannte Kongokonferenz statt?",
+      "image": "/images/Kongokonferenz.jpg",
+      "answer": {
+        "lat": 52.5096,
+        "lng": 13.3810
+      },
+      "answerLabel": "Berlin (Wilhelmstraße 92)",
+      "mapCenter": [30, 20],
+      "mapZoom": 3,
+      "maxRadius": 15000,
+      "timeLimit": 30,
+      "points": 100
+    },
+
+    {
+      "id": 5,
+      "type": "info",
+      "title": "Die Kongokonferenz (1884/85)",
+      "image": "/images/Kongokonferenz.jpg",
+      "content": "Die Kongokonferenz fand von November 1884 bis Februar 1885 in Berlin statt — einberufen von Reichskanzler Otto von Bismarck. 14 europäische Staaten sowie die USA und das Osmanische Reich teilten dort den afrikanischen Kontinent unter sich auf.\n\n**Kein einziger Afrikaner war eingeladen.** Die Grenzen, die am Verhandlungstisch gezogen wurden, zerschnitten gewachsene Gemeinschaften und bestehen oft bis heute.\n\nDie Konferenz markiert den Beginn des sogenannten 'Wettlaufs um Afrika'. Sie legitimierte die koloniale Ausbeutung und Unterdrückung und basierte auf der Annahme, Afrikaner seien nicht in der Lage, sich selbst zu regieren — eine zutiefst rassistische Vorstellung.\n\nDie Folgen sind bis heute spürbar: willkürliche Staatsgrenzen, wirtschaftliche Abhängigkeiten und rassistische Denkmuster, die in der Kolonialzeit systematisch verbreitet wurden."
+    },
+
+    {
+      "id": 6,
+      "type": "map",
+      "question": "Wo wurde dieses Bild aufgenommen?",
+      "image": "/images/V%C3%B6lkerschau.jpg",
+      "answer": {
+        "lat": 53.5631,
+        "lng": 9.9988
+      },
+      "answerLabel": "Hamburg (Tierpark Hagenbeck)",
+      "mapCenter": [30, 20],
+      "mapZoom": 3,
+      "maxRadius": 15000,
+      "timeLimit": 30,
+      "points": 100
+    },
+
+    {
+      "id": 7,
+      "type": "info",
+      "title": "Völkerschauen — Rassismus als Unterhaltung",
+      "image": "/images/V%C3%B6lkerschau.jpg",
+      "content": "Das Bild stammt aus dem Tierpark Hagenbeck in Hamburg. Dort wurden von 1874 bis in die 1930er-Jahre sogenannte **Völkerschauen** veranstaltet — Menschen aus Afrika, Asien und Ozeanien wurden wie exotische Tiere zur Schau gestellt.\n\nCarl Hagenbeck war einer der bekanntesten Veranstalter solcher 'Menschenzoos'. Die Ausgestellten mussten in nachgebauten Dörfern leben und vor Publikum ihren vermeintlich 'primitiven' Alltag vorführen. Millionen Europäer besuchten diese Schauen.\n\nVölkerschauen festigten rassistische Vorstellungen in der breiten Bevölkerung: Sie vermittelten den Eindruck, europäische Zivilisation sei überlegen, und reduzierten ganze Kulturen auf Stereotype. Die letzte Völkerschau in Deutschland fand 1940 statt.\n\nDiese Geschichte zeigt, dass Rassismus kein abstraktes Problem ist — er wurde aktiv inszeniert, kommerzialisiert und normalisiert, auch hier in Deutschland."
+    },
+
+    {
+      "id": 8,
+      "type": "map",
+      "question": "Wo wurden die sogenannten 'Rassengesetze' verkündet?",
+      "image": "/images/Rassengesetze.jpg",
+      "answer": {
+        "lat": 49.4521,
+        "lng": 11.0767
+      },
+      "answerLabel": "Nürnberg (Reichsparteitagsgelände)",
+      "mapCenter": [48, 10],
+      "mapZoom": 4,
+      "maxRadius": 15000,
+      "timeLimit": 30,
+      "points": 100
+    },
+
+    {
+      "id": 9,
+      "type": "info",
+      "title": "Die Nürnberger Rassengesetze (1935)",
+      "image": "/images/Rassengesetze.jpg",
+      "content": "Am 15. September 1935 wurden auf dem Reichsparteitag in Nürnberg die sogenannten 'Rassengesetze' verkündet. Mit dem 'Reichsbürgergesetz' und dem 'Blutschutzgesetz' wurde Rassismus zum Staatsgesetz.\n\nJüdischen Menschen wurde die deutsche Staatsbürgerschaft entzogen, Ehen und Beziehungen zwischen Juden und Nicht-Juden wurden verboten. Auch Sinti und Roma sowie Schwarze Deutsche waren von Verfolgung betroffen.\n\nDie Gesetze basierten auf denselben pseudowissenschaftlichen Rassentheorien, die bereits Sklavenhandel und Kolonialismus rechtfertigt hatten — und zeigen, wohin es führen kann, wenn rassistisches Denken zur politischen Grundlage wird.\n\nDie Nürnberger Gesetze waren ein entscheidender Schritt auf dem Weg zum Holocaust."
+    },
+
+    {
+      "id": 10,
+      "type": "estimation",
+      "question": "Wie viele Goldmedaillen gewann Jesse Owens bei den Olympischen Spielen 1936 in Berlin?",
+      "image": "/images/jesse%20owens.jpg",
+      "answer": 4,
+      "unit": "Goldmedaillen",
+      "hint": "Gib eine Zahl ein",
+      "halfLife": 1,
+      "tolerance": 10,
+      "timeLimit": 30,
+      "points": 100
+    },
+
+    {
+      "id": 11,
+      "type": "info",
+      "title": "Jesse Owens — Triumph gegen die Rassenideologie",
+      "image": "/images/jesse%20owens.jpg",
+      "content": "Der afroamerikanische Leichtathlet Jesse Owens gewann bei den Olympischen Spielen 1936 in Berlin **4 Goldmedaillen** — in 100m, 200m, Weitsprung und 4×100m-Staffel.\n\nDie Nazis hatten die Spiele als Bühne für ihre 'Überlegenheitsideologie' geplant. Owens' Erfolg widerlegte die NS-Rassenideologie vor den Augen der Welt.\n\nDoch auch in den USA war Owens von Rassismus betroffen: Präsident Roosevelt empfing ihn nicht im Weißen Haus, und bei der Siegerehrung in New York musste er den Lastenaufzug nehmen. Owens selbst sagte: 'Hitler hat mich nicht brüskiert — es war unser eigener Präsident.'\n\nSeine Geschichte zeigt: Rassismus war kein rein deutsches Phänomen, sondern ein globales Problem."
+    },
+
+    {
+      "id": 12,
+      "type": "map",
+      "question": "Wo befindet sich diese Straße?",
+      "image": "/images/mohrenstrasse.jpg",
+      "answer": {
+        "lat": 52.5133,
+        "lng": 13.3928
+      },
+      "answerLabel": "Berlin-Mitte (heute: Anton-Wilhelm-Amo-Straße)",
+      "mapCenter": [50, 10],
+      "mapZoom": 4,
+      "maxRadius": 15000,
+      "timeLimit": 30,
+      "points": 100
+    },
+
+    {
+      "id": 13,
+      "type": "info",
+      "title": "Von der Mohrenstraße zur Anton-Wilhelm-Amo-Straße",
+      "image": "/images/mohrenstrasse.jpg",
+      "content": "Die Mohrenstraße in Berlin-Mitte trug ihren Namen seit dem 18. Jahrhundert. Der Begriff 'Mohr' wird heute als rassistisch eingestuft, da er Menschen auf ihre Hautfarbe reduziert und koloniale Machtverhältnisse widerspiegelt.\n\nNach jahrelanger Debatte wurde die Straße 2025 in **Anton-Wilhelm-Amo-Straße** umbenannt — benannt nach dem ersten Schwarzen Philosophen an einer europäischen Universität. Amo wurde um 1703 in Ghana geboren, als Kind nach Deutschland verschleppt und promovierte 1734 an der Universität Wittenberg.\n\nDie Umbenennung zeigt: Gesellschaft kann sich aktiv mit rassistischen Spuren im Alltag auseinandersetzen. Straßennamen, Denkmäler und Begriffe sind nicht neutral — sie erzählen Geschichten und prägen, wie wir über Menschen denken.\n\nÜber 100 weitere Straßen in Deutschland tragen noch immer koloniale oder rassistisch belastete Namen."
+    },
+
+    {
+      "id": 14,
+      "type": "title",
+      "title": "Teil 2\nRassismus im Alltag",
+      "subtitle": "Wie präsent ist Rassismus in unserem täglichen Leben?"
+    },
+
+    {
+      "id": 15,
+      "type": "video",
+      "title": "Agentur für Reinkultur — Datteltäter",
+      "videoType": "youtube",
+      "videoUrl": "https://www.youtube.com/watch?v=LDKCTKtxdAY",
+      "question": "Schaut euch das Video an — gleich gibt es Fragen dazu!"
+    },
+
+    {
+      "id": 16,
+      "type": "multiple-choice",
+      "question": "Was hielt Herr Peschke in der Hand, als er das erste Mal im Video erscheint?",
+      "options": [
+        "Eine Zigarette und eine Kaffeetasse",
+        "Ein Bier und eine Fernbedienung",
+        "Eine Zeitung und ein Glas Wasser",
+        "Ein Handy und eine Bierflasche"
+      ],
+      "correct": 0,
+      "timeLimit": 20,
+      "points": 20
+    },
+
+    {
+      "id": 17,
+      "type": "multiple-choice",
+      "question": "Welche Farbe hat Dr. Nazaris Glocke?",
+      "options": [
+        "Gold",
+        "Silber",
+        "Rot",
+        "Blau"
+      ],
+      "correct": 2,
+      "timeLimit": 20,
+      "points": 20
+    },
+
+    {
+      "id": 18,
+      "type": "multiple-choice",
+      "question": "Wie hieß Herrn Peschkes Bekannte?",
+      "options": [
+        "Nadja",
+        "Katja",
+        "Natascha",
+        "Sandra"
+      ],
+      "correct": 0,
+      "timeLimit": 20,
+      "points": 20
+    },
+
+    {
+      "id": 19,
+      "type": "multiple-choice",
+      "question": "Welche Farbe hat das Klemmbrett des Arztes, an den Herr Peschke übergeben wird?",
+      "options": [
+        "Grün",
+        "Weiß",
+        "Blau",
+        "Schwarz"
+      ],
+      "correct": 2,
+      "timeLimit": 20,
+      "points": 20
+    },
+
+    {
+      "id": 20,
+      "type": "multiple-choice",
+      "question": "Was liegt neben dem BVB-Schal in Herrn Peschkes Zimmer?",
+      "options": [
+        "Ein Glas Milch und ein Teller mit einer Scheibe Pumpernickel",
+        "Eine Tüte Chips und eine Cola-Dose",
+        "Ein Glas Bier und ein Butterbrot",
+        "Eine Tasse Tee und ein Stück Kuchen"
+      ],
+      "correct": 0,
+      "timeLimit": 20,
+      "points": 20
+    },
+
+    {
+      "id": 21,
+      "type": "title",
+      "title": "Vielen Dank!",
+      "subtitle": "Schule ohne Rassismus – Schule mit Courage 🌍"
+    }
+  ]
+}

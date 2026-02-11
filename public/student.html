@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SoR Quiz – Mitspielen</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/student.css">
+</head>
+<body>
+  <!-- ========== BEITRITT ========== -->
+  <div id="join-screen" class="screen active">
+    <div class="join-container">
+      <div class="join-header">
+        <img src="/images/logo.png" alt="SoR Logo" class="join-logo-img">
+        <h1>Schule ohne Rassismus</h1>
+        <p>Tritt dem Quiz bei!</p>
+      </div>
+
+      <form id="join-form" onsubmit="joinGame(event)">
+        <div class="avatars" id="avatar-select">
+          <button type="button" class="avatar-btn selected" data-avatar="🎓" onclick="selectAvatar(this)">🎓</button>
+          <button type="button" class="avatar-btn" data-avatar="🌍" onclick="selectAvatar(this)">🌍</button>
+          <button type="button" class="avatar-btn" data-avatar="✊" onclick="selectAvatar(this)">✊</button>
+          <button type="button" class="avatar-btn" data-avatar="🌈" onclick="selectAvatar(this)">🌈</button>
+          <button type="button" class="avatar-btn" data-avatar="💪" onclick="selectAvatar(this)">💪</button>
+          <button type="button" class="avatar-btn" data-avatar="🎯" onclick="selectAvatar(this)">🎯</button>
+          <button type="button" class="avatar-btn" data-avatar="⭐" onclick="selectAvatar(this)">⭐</button>
+          <button type="button" class="avatar-btn" data-avatar="🦋" onclick="selectAvatar(this)">🦋</button>
+        </div>
+
+        <input type="text" id="player-name" placeholder="Dein Name" maxlength="20" required autocomplete="off">
+        <button type="submit" class="btn-join">Beitreten</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========== WARTEBILDSCHIRM ========== -->
+  <div id="waiting-screen" class="screen">
+    <div class="waiting-container">
+      <div class="waiting-avatar" id="waiting-avatar">🎓</div>
+      <h2 id="waiting-name">Spieler</h2>
+      <p class="waiting-text">Warte auf den Start des Quiz...</p>
+      <div class="waiting-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== FRAGE-BILDSCHIRM ========== -->
+  <div id="question-screen" class="screen">
+    <!-- Timer -->
+    <div class="student-timer" id="student-timer">
+      <div class="student-timer-bar" id="student-timer-bar"></div>
+      <span class="student-timer-text" id="student-timer-text">30</span>
+    </div>
+
+    <!-- Score -->
+    <div class="student-score" id="student-score">0 Punkte</div>
+
+    <!-- Frage-Container -->
+    <div class="question-container" id="question-container">
+      <!-- Wird dynamisch befüllt -->
+    </div>
+  </div>
+
+  <!-- ========== ANTWORT BESTÄTIGT ========== -->
+  <div id="answered-screen" class="screen">
+    <div class="answered-container">
+      <div class="answered-icon">✅</div>
+      <h2>Antwort gesendet!</h2>
+      <p>Warte auf die Auswertung...</p>
+    </div>
+  </div>
+
+  <!-- ========== ERGEBNIS ========== -->
+  <div id="result-screen" class="screen">
+    <div class="result-container" id="result-container">
+      <!-- Wird dynamisch befüllt -->
+    </div>
+  </div>
+
+  <!-- ========== INFO-SLIDE (passiv) ========== -->
+  <div id="info-screen" class="screen">
+    <div class="info-container">
+      <div class="info-passive-icon">👀</div>
+      <h2 id="info-title">Informationsfolie</h2>
+      <p class="info-passive-text">Schau auf den Beamer!</p>
+    </div>
+  </div>
+
+  <!-- ========== QUIZ-ENDE ========== -->
+  <div id="end-screen" class="screen">
+    <div class="end-container">
+      <div class="end-icon">🎉</div>
+      <h1>Quiz beendet!</h1>
+      <div class="end-rank" id="end-rank"></div>
+      <div class="end-score" id="end-score"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/student.js"></script>
+</body>
+</html>

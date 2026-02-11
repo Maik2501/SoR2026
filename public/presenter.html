@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoR Quiz – Presenter</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/presenter.css">
+</head>
+<body>
+  <!-- ========== WARTEBILDSCHIRM ========== -->
+  <div id="lobby-screen" class="screen active">
+    <div class="lobby-container">
+      <div class="lobby-header">
+        <img src="/images/logo.png" alt="SoR Logo" class="lobby-logo">
+        <h1>Schule ohne Rassismus</h1>
+        <h2>Schule mit Courage</h2>
+        <div class="lobby-subtitle">Interaktives Quiz</div>
+      </div>
+
+      <div class="lobby-join-info">
+        <div class="join-card">
+          <div class="join-label">Mitmachen:</div>
+          <div class="join-url" id="join-url">Lädt...</div>
+          <div class="qr-container">
+            <canvas id="qr-code"></canvas>
+          </div>
+        </div>
+
+        <div class="players-card">
+          <div class="players-header">
+            <span class="player-count" id="player-count">0</span>
+            <span>Spieler verbunden</span>
+          </div>
+          <div class="players-list" id="players-list"></div>
+        </div>
+      </div>
+
+      <button class="btn-start" id="btn-start-quiz" onclick="startQuiz()">
+        ▶ Quiz starten
+      </button>
+    </div>
+  </div>
+
+  <!-- ========== PRÄSENTATIONS-ANSICHT ========== -->
+  <div id="presentation-screen" class="screen">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="slide-counter" id="slide-counter">1 / 10</span>
+        <span class="player-badge" id="topbar-players">👥 0</span>
+      </div>
+      <div class="topbar-center">
+        <div class="timer-display" id="timer-display" style="display:none">
+          <div class="timer-ring" id="timer-ring">
+            <svg viewBox="0 0 60 60">
+              <circle cx="30" cy="30" r="26" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"/>
+              <circle id="timer-circle" cx="30" cy="30" r="26" fill="none" stroke="#e94560" stroke-width="4"
+                      stroke-dasharray="163.36" stroke-dashoffset="0" stroke-linecap="round"
+                      transform="rotate(-90 30 30)"/>
+            </svg>
+            <span class="timer-text" id="timer-text">30</span>
+          </div>
+          <div class="answer-counter" id="answer-counter">0 / 0 Antworten</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-icon" onclick="showLeaderboard()" title="Leaderboard">🏆</button>
+        <button class="btn-icon" onclick="resetQuiz()" title="Zurücksetzen">🔄</button>
+      </div>
+    </div>
+
+    <!-- Slide-Container -->
+    <div class="slide-container" id="slide-container">
+      <!-- Wird dynamisch befüllt -->
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="btn-nav" id="btn-prev" onclick="prevSlide()">← Zurück</button>
+      <button class="btn-nav btn-nav-primary" id="btn-next" onclick="nextSlide()">Weiter →</button>
+    </div>
+
+    <!-- Leaderboard Overlay -->
+    <div class="overlay" id="leaderboard-overlay" style="display:none">
+      <div class="overlay-content leaderboard-content">
+        <h2>🏆 Leaderboard</h2>
+        <div class="leaderboard-list" id="leaderboard-list"></div>
+        <button class="btn-close" onclick="hideLeaderboard()">Schließen</button>
+      </div>
+    </div>
+
+    <!-- Ergebnis-Overlay (nach Frage) -->
+    <div class="overlay" id="results-overlay" style="display:none">
+      <div class="overlay-content results-content">
+        <div class="results-header" id="results-header"></div>
+        <div class="results-body" id="results-body"></div>
+        <div class="results-leaderboard" id="results-leaderboard"></div>
+        <button class="btn-close" onclick="hideResults()">Weiter →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== QUIZ-ENDE ========== -->
+  <div id="end-screen" class="screen">
+    <div class="end-container">
+      <h1>🎉 Quiz beendet!</h1>
+      <div class="final-leaderboard" id="final-leaderboard"></div>
+      <button class="btn-start" onclick="resetQuiz()">🔄 Neues Quiz</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/presenter.js"></script>
+</body>
+</html>
