@@ -1,5 +1,11 @@
 // ========== SOCKET.IO ==========
-const socket = io();
+const socket = io({
+  reconnection: true,
+  reconnectionAttempts: Infinity,
+  reconnectionDelay: 1000,
+  reconnectionDelayMax: 5000,
+  timeout: 30000,
+});
 let myName = '';
 let myAvatar = '🎓';
 let myScore = 0;
@@ -27,8 +33,12 @@ function joinGame(e) {
 socket.on('join-success', (data) => {
   myName = data.name;
   myAvatar = data.avatar || myAvatar;
+  if (data.score !== undefined) myScore = data.score;
   document.getElementById('waiting-avatar').textContent = myAvatar;
   document.getElementById('waiting-name').textContent = myName;
+  if (data.reconnected) {
+    console.log('[STUDENT] Reconnected! Score restored:', myScore);
+  }
   showScreen('waiting-screen');
 });
 
@@ -490,12 +500,68 @@ function vibrate(ms) {
 }
 
 // Bei Verbindungsverlust
-socket.on('disconnect', () => {
-  // Versuche Reconnect
+socket.on('disconnect', (reason) => {
+  console.log('[STUDENT] Disconnected:', reason);
+  showConnectionStatus('Verbindung verloren — reconnecting...', 'error');
 });
 
 socket.on('reconnect', () => {
+  console.log('[STUDENT] Reconnected!');
+  showConnectionStatus('Wieder verbunden!', 'success');
   if (myName) {
     socket.emit('player-join', { name: myName, avatar: myAvatar });
   }
+  // Status-Meldung nach 3s ausblenden
+  setTimeout(() => hideConnectionStatus(), 3000);
 });
+
+socket.on('reconnect_attempt', (attempt) => {
+  console.log('[STUDENT] Reconnect attempt:', attempt);
+  showConnectionStatus(`Reconnecting... (Versuch ${attempt})`, 'warning');
+});
+
+socket.on('reconnect_failed', () => {
+  showConnectionStatus('Verbindung fehlgeschlagen — bitte Seite neu laden', 'error');
+});
+
+// ========== VERBINDUNGSSTATUS-ANZEIGE ==========
+function showConnectionStatus(message, type) {
+  let statusEl = document.getElementById('connection-status');
+  if (!statusEl) {
+    statusEl = document.createElement('div');
+    statusEl.id = 'connection-status';
+    statusEl.style.cssText = `
+      position: fixed; top: 0; left: 0; right: 0; z-index: 10000;
+      padding: 8px 16px; text-align: center; font-size: 14px; font-weight: 600;
+      font-family: 'Inter', sans-serif; transition: transform 0.3s ease;
+    `;
+    document.body.appendChild(statusEl);
+  }
+  statusEl.textContent = message;
+  statusEl.style.transform = 'translateY(0)';
+  if (type === 'error') {
+    statusEl.style.background = '#e94560';
+    statusEl.style.color = '#fff';
+  } else if (type === 'warning') {
+    statusEl.style.background = '#f59e0b';
+    statusEl.style.color = '#fff';
+  } else {
+    statusEl.style.background = '#10b981';
+    statusEl.style.color = '#fff';
+  }
+}
+
+function hideConnectionStatus() {
+  const statusEl = document.getElementById('connection-status');
+  if (statusEl) {
+    statusEl.style.transform = 'translateY(-100%)';
+  }
+}
+
+// ========== KEEPALIVE ==========
+// Verhindert, dass der Browser die WebSocket-Verbindung bei Inaktivität schließt
+setInterval(() => {
+  if (socket.connected) {
+    socket.emit('heartbeat');
+  }
+}, 15000); // Alle 15 Sekunden

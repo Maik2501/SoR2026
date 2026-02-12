@@ -18,7 +18,7 @@
       "unit": "",
       "hint": "Gib eine Jahreszahl ein",
       "tolerance": 200,
-      "timeLimit": 30,
+      "timeLimit": 60,
       "points": 100
     },
 
@@ -43,7 +43,7 @@
       "mapCenter": [30, 20],
       "mapZoom": 3,
       "maxRadius": 15000,
-      "timeLimit": 30,
+      "timeLimit": 60,
       "points": 100
     },
 
@@ -68,7 +68,7 @@
       "mapCenter": [30, 20],
       "mapZoom": 3,
       "maxRadius": 15000,
-      "timeLimit": 30,
+      "timeLimit": 60,
       "points": 100
     },
 
@@ -93,7 +93,7 @@
       "mapCenter": [48, 10],
       "mapZoom": 4,
       "maxRadius": 15000,
-      "timeLimit": 30,
+      "timeLimit": 60,
       "points": 100
     },
 
@@ -115,7 +115,7 @@
       "hint": "Gib eine Zahl ein",
       "halfLife": 1,
       "tolerance": 10,
-      "timeLimit": 30,
+      "timeLimit": 60,
       "points": 100
     },
 
@@ -140,7 +140,7 @@
       "mapCenter": [50, 10],
       "mapZoom": 4,
       "maxRadius": 15000,
-      "timeLimit": 30,
+      "timeLimit": 60,
       "points": 100
     },
 
@@ -179,7 +179,7 @@
         "Ein Handy und eine Bierflasche"
       ],
       "correct": 0,
-      "timeLimit": 20,
+      "timeLimit": 40,
       "points": 20
     },
 
@@ -194,7 +194,7 @@
         "Blau"
       ],
       "correct": 2,
-      "timeLimit": 20,
+      "timeLimit": 40,
       "points": 20
     },
 
@@ -209,7 +209,7 @@
         "Sandra"
       ],
       "correct": 0,
-      "timeLimit": 20,
+      "timeLimit": 40,
       "points": 20
     },
 
@@ -224,7 +224,7 @@
         "Schwarz"
       ],
       "correct": 2,
-      "timeLimit": 20,
+      "timeLimit": 40,
       "points": 20
     },
 
@@ -239,7 +239,7 @@
         "Eine Tasse Tee und ein Stück Kuchen"
       ],
       "correct": 0,
-      "timeLimit": 20,
+      "timeLimit": 40,
       "points": 20
     },
 

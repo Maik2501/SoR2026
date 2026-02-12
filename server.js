@@ -17,7 +17,11 @@ try {
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  pingInterval: 10000,     // Alle 10s ein Ping
+  pingTimeout: 30000,      // 30s warten auf Pong bevor Disconnect
+  connectTimeout: 60000,   // 60s Timeout beim Verbinden
+});
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'sor2026';
@@ -25,6 +29,10 @@ const SESSION_SECRET = crypto.randomBytes(32).toString('hex');
 
 // Aktive Admin-Sessions
 const adminSessions = new Set();
+
+// Disconnect-Grace-Period: Spieler behalten für Reconnect
+const DISCONNECT_GRACE_MS = 5 * 60 * 1000; // 5 Minuten
+const disconnectedPlayers = new Map(); // name -> { playerData, timeout, oldSocketId }
 
 // --- Middleware ---
 app.use(express.urlencoded({ extended: false }));
@@ -337,23 +345,42 @@ io.on('connection', (socket) => {
     console.log('Presenter verbunden');
   });
 
-  // Schüler tritt bei
+  // Schüler tritt bei (mit Reconnect-Support)
   socket.on('player-join', (data) => {
     const name = (data.name || 'Anonym').trim().substring(0, 20);
     const avatar = data.avatar || '🎓';
 
-    gameState.players[socket.id] = {
-      name,
-      avatar,
-      score: 0,
-      answers: [],
-    };
+    // Prüfe ob Spieler reconnected (gleicher Name)
+    const disconnected = disconnectedPlayers.get(name);
+    if (disconnected) {
+      // Reconnect: alten Spielstand wiederherstellen
+      clearTimeout(disconnected.timeout);
+      disconnectedPlayers.delete(name);
+
+      // Alten Socket-Eintrag entfernen, neuen anlegen
+      delete gameState.players[disconnected.oldSocketId];
+      delete gameState.answers[disconnected.oldSocketId];
+
+      gameState.players[socket.id] = disconnected.playerData;
+      console.log(`Spieler "${name}" reconnected (Score: ${disconnected.playerData.score})`);
+    } else {
+      gameState.players[socket.id] = {
+        name,
+        avatar,
+        score: 0,
+        answers: [],
+      };
+    }
 
     socket.join('students');
+
+    const restoredScore = gameState.players[socket.id].score || 0;
     socket.emit('join-success', {
       name,
-      avatar,
+      avatar: gameState.players[socket.id].avatar || avatar,
       playerCount: getPlayerCount(),
+      reconnected: !!disconnected,
+      score: restoredScore,
     });
 
     // Aktuellen Slide senden
@@ -519,18 +546,38 @@ io.on('connection', (socket) => {
     console.log('Quiz zurückgesetzt');
   });
 
-  // Verbindung getrennt
+  // Verbindung getrennt — Grace Period statt sofortigem Löschen
   socket.on('disconnect', () => {
     if (gameState.players[socket.id]) {
-      const name = gameState.players[socket.id].name;
-      delete gameState.players[socket.id];
-      delete gameState.answers[socket.id];
-      io.to('presenter').emit('player-left', {
+      const playerData = { ...gameState.players[socket.id] };
+      const name = playerData.name;
+
+      // Spieler in Grace-Period verschieben (nicht sofort löschen)
+      const timeout = setTimeout(() => {
+        // Nach Grace Period endgültig entfernen
+        disconnectedPlayers.delete(name);
+        delete gameState.players[socket.id];
+        delete gameState.answers[socket.id];
+        io.to('presenter').emit('player-left', {
+          id: socket.id,
+          name,
+          playerCount: getPlayerCount(),
+        });
+        console.log(`Spieler "${name}" endgültig entfernt (Grace Period abgelaufen)`);
+      }, DISCONNECT_GRACE_MS);
+
+      disconnectedPlayers.set(name, {
+        playerData,
+        timeout,
+        oldSocketId: socket.id,
+      });
+
+      io.to('presenter').emit('player-disconnected', {
         id: socket.id,
         name,
         playerCount: getPlayerCount(),
       });
-      console.log(`Spieler "${name}" getrennt (${getPlayerCount()} Spieler)`);
+      console.log(`Spieler "${name}" disconnected — ${DISCONNECT_GRACE_MS / 1000}s Grace Period`);
     }
   });
 });
