@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoR Quiz — Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #e94560;
+      --accent-light: #ff6b81;
+      --text: #1a1a2e;
+      --text-muted: #6b7280;
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --radius: 16px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --font: 'Inter', -apple-system, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .topbar h1 { font-size: 1.3rem; font-weight: 700; }
+    .topbar-right { display: flex; gap: 1rem; align-items: center; }
+    .topbar-right a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .topbar-right a:hover { background: #f0f0f0; color: var(--text); }
+    .btn-logout {
+      background: none;
+      border: 1px solid #e5e7eb;
+      color: var(--text-muted);
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 0.9rem;
+    }
+    .btn-logout:hover { border-color: var(--accent); color: var(--accent); }
+
+    .container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .stat-value { font-size: 2.5rem; font-weight: 800; color: var(--accent); }
+    .stat-label { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .section-header h2 { font-size: 1.2rem; font-weight: 700; }
+    .btn-refresh {
+      background: none;
+      border: 1px solid #e5e7eb;
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+
+    .room-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1rem;
+    }
+    .room-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .room-code {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: var(--accent);
+    }
+    .room-status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .status-waiting { background: #fef3c7; color: #92400e; }
+    .status-active { background: #d1fae5; color: #065f46; }
+    .status-finished { background: #e5e7eb; color: #374151; }
+
+    .room-info {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .room-info span { display: flex; align-items: center; gap: 0.3rem; }
+
+    .room-players {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .player-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: #f3f4f6;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+    .player-score { color: var(--accent); font-weight: 600; }
+
+    .room-actions { display: flex; gap: 0.5rem; }
+    .btn-action {
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: 1px solid #e5e7eb;
+      background: none;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .btn-action:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger { border-color: #fca5a5; color: #dc2626; }
+    .btn-danger:hover { background: #fef2f2; border-color: #dc2626; }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    @media (max-width: 600px) {
+      .topbar { padding: 0.8rem 1rem; }
+      .container { padding: 0 1rem; }
+      .room-info { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>📊 Admin Dashboard</h1>
+    <div class="topbar-right">
+      <a href="/">← Zur Startseite</a>
+      <a href="/logout" class="btn-logout">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-rooms">0</div>
+        <div class="stat-label">Aktive Räume</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-players">0</div>
+        <div class="stat-label">Spieler gesamt</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h2>Laufende Sessions</h2>
+      <button class="btn-refresh" onclick="loadRooms()">🔄 Aktualisieren</button>
+    </div>
+
+    <div id="rooms-container">
+      <div class="empty-state">
+        <div class="icon">🎮</div>
+        <p>Keine aktiven Räume</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function loadRooms() {
+      try {
+        const res = await fetch('/api/rooms');
+        if (res.status === 401) { window.location.href = '/login'; return; }
+        const data = await res.json();
+        renderRooms(data.rooms);
+      } catch (e) {
+        console.error('Fehler beim Laden:', e);
+      }
+    }
+
+    function renderRooms(rooms) {
+      document.getElementById('stat-rooms').textContent = rooms.length;
+      document.getElementById('stat-players').textContent = rooms.reduce((sum, r) => sum + r.playerCount, 0);
+
+      const container = document.getElementById('rooms-container');
+      if (rooms.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="icon">🎮</div><p>Keine aktiven Räume</p></div>';
+        return;
+      }
+
+      container.innerHTML = rooms.map(room => {
+        const statusClass = `status-${room.status}`;
+        const statusLabel = { waiting: 'Wartet', active: 'Aktiv', finished: 'Beendet' }[room.status] || room.status;
+        const created = new Date(room.createdAt).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        const lastActive = timeAgo(room.lastActivity);
+
+        return `
+          <div class="room-card">
+            <div class="room-header">
+              <div>
+                <span class="room-code">${room.code}</span>
+                <span class="room-status ${statusClass}">${statusLabel}</span>
+              </div>
+            </div>
+            <div class="room-info">
+              <span>👥 ${room.playerCount} Spieler</span>
+              <span>📄 Folie ${room.currentSlide}/${room.totalSlides}</span>
+              <span>🕐 Erstellt ${created}</span>
+              <span>⏱️ Zuletzt aktiv ${lastActive}</span>
+            </div>
+            ${room.players.length > 0 ? `
+              <div class="room-players">
+                ${room.players.map(p => `
+                  <span class="player-chip">
+                    ${p.avatar} ${p.name}
+                    <span class="player-score">${p.score} Pkt.</span>
+                  </span>
+                `).join('')}
+              </div>
+            ` : ''}
+            <div class="room-actions">
+              <a href="/host/${room.code}" class="btn-action" target="_blank">📺 Presenter öffnen</a>
+              <button class="btn-action btn-danger" onclick="deleteRoom('${room.code}')">🗑️ Raum löschen</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function deleteRoom(code) {
+      if (!confirm(`Raum ${code} wirklich löschen? Alle Spieler werden getrennt.`)) return;
+      try {
+        await fetch(`/api/rooms/${code}`, { method: 'DELETE' });
+        loadRooms();
+      } catch (e) {
+        alert('Fehler beim Löschen');
+      }
+    }
+
+    function timeAgo(timestamp) {
+      const seconds = Math.floor((Date.now() - timestamp) / 1000);
+      if (seconds < 60) return 'gerade eben';
+      if (seconds < 3600) return `vor ${Math.floor(seconds / 60)} Min.`;
+      return `vor ${Math.floor(seconds / 3600)} Std.`;
+    }
+
+    // Initial laden & auto-refresh alle 10s
+    loadRooms();
+    setInterval(loadRooms, 10000);
+  </script>
+</body>
+</html>

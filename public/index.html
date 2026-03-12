@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoR Quiz – Schule ohne Rassismus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #e94560;
+      --accent-light: #ff6b81;
+      --text: #1a1a2e;
+      --text-muted: #6b7280;
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --radius: 16px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+    .logo { width: 100px; margin-bottom: 1.5rem; }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+    .subtitle {
+      margin-top: 0.8rem;
+      font-size: 1rem;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .actions {
+      margin-top: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1.2rem 2rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+      font-family: var(--font);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(233,69,96,0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(233,69,96,0.4);
+    }
+    .btn-secondary {
+      background: var(--card);
+      color: var(--text);
+      border: 2px solid #e5e7eb;
+      box-shadow: var(--shadow);
+    }
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      background: #fef2f4;
+      transform: translateY(-2px);
+    }
+    .btn-icon { font-size: 1.5rem; }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0.5rem 0;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    /* Join-Code Eingabe */
+    .join-section {
+      margin-top: 2rem;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .join-section h3 {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+    .code-input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .code-input {
+      flex: 1;
+      padding: 0.9rem 1rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      font-family: var(--font);
+      text-align: center;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .code-input:focus { border-color: var(--accent); }
+    .code-input::placeholder { letter-spacing: 2px; font-weight: 400; font-size: 1rem; color: #ccc; }
+    .btn-join-code {
+      padding: 0.9rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      font-family: var(--font);
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-join-code:hover { background: #d63851; }
+    .join-error {
+      color: var(--accent);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .footer {
+      margin-top: 3rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 1.8rem; }
+      h2 { font-size: 1.1rem; }
+      .btn { padding: 1rem 1.5rem; font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="/images/logo.png" alt="SoR Logo" class="logo">
+    <h1>Schule ohne Rassismus</h1>
+    <h2>Schule mit Courage</h2>
+    <div class="subtitle">Interaktives Quiz</div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="createNewQuiz()">
+        <span class="btn-icon">🎮</span>
+        Neues Quiz starten
+      </button>
+
+      <div class="divider">oder einem Quiz beitreten</div>
+
+      <div class="join-section">
+        <h3>Quiz-Code eingeben</h3>
+        <div class="code-input-row">
+          <input type="text" class="code-input" id="room-code" placeholder="CODE" maxlength="4" autocomplete="off" spellcheck="false">
+          <button class="btn-join-code" onclick="joinWithCode()">→</button>
+        </div>
+        <div class="join-error" id="join-error">Raum nicht gefunden</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <a href="/admin">Admin</a>
+    </div>
+  </div>
+
+  <script>
+    async function createNewQuiz() {
+      // Raum wird über Socket.io erstellt, wir leiten einfach weiter
+      // Der Presenter erstellt den Raum beim Verbinden
+      try {
+        const res = await fetch('/api/ip');
+        const data = await res.json();
+      } catch(e) {}
+      // Redirect zu einer temporären URL, der Presenter erstellt den Raum
+      window.location.href = '/host/new';
+    }
+
+    async function joinWithCode() {
+      const code = document.getElementById('room-code').value.trim().toUpperCase();
+      if (!code || code.length < 4) {
+        showError('Bitte gib einen 4-stelligen Code ein');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/room/${code}`);
+        if (res.ok) {
+          window.location.href = `/play/${code}`;
+        } else {
+          showError('Raum nicht gefunden. Bitte prüfe den Code.');
+        }
+      } catch (e) {
+        showError('Verbindungsfehler. Bitte versuche es erneut.');
+      }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('join-error');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 4000);
+    }
+
+    // Enter-Taste im Code-Input
+    document.getElementById('room-code').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') joinWithCode();
+    });
+
+    // Auto-uppercase
+    document.getElementById('room-code').addEventListener('input', (e) => {
+      e.target.value = e.target.value.toUpperCase();
+    });
+  </script>
+</body>
+</html>

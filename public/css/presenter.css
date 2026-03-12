@@ -117,6 +117,24 @@ html, body {
   align-items: center;
 }
 
+.room-code-box {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.room-code-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+.room-code-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: var(--accent);
+}
+
 .join-label {
   font-size: 1rem;
   color: var(--text-muted);

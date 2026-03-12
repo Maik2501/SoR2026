@@ -25,6 +25,11 @@
       </div>
 
       <form id="join-form" onsubmit="joinGame(event)">
+        <div id="room-code-section">
+          <input type="text" id="room-code-input" placeholder="Raum-Code (z.B. AB3K)" maxlength="4" autocomplete="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:4px;text-align:center;font-weight:700;font-size:1.2rem;margin-bottom:0.5rem;">
+        </div>
+        <div id="room-code-info" style="display:none;text-align:center;font-weight:600;color:#e94560;margin-bottom:0.5rem;font-size:1.1rem;"></div>
+
         <div class="avatars" id="avatar-select">
           <button type="button" class="avatar-btn selected" data-avatar="🎓" onclick="selectAvatar(this)">🎓</button>
           <button type="button" class="avatar-btn" data-avatar="🌍" onclick="selectAvatar(this)">🌍</button>

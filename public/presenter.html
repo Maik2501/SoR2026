@@ -27,7 +27,11 @@
 
       <div class="lobby-join-info">
         <div class="join-card">
-          <div class="join-label">Mitmachen:</div>
+          <div class="room-code-box">
+            <div class="room-code-label">Raum-Code</div>
+            <div class="room-code-value" id="room-code-display">...</div>
+          </div>
+          <div class="join-label">Oder direkt beitreten:</div>
           <div class="join-url" id="join-url">Lädt...</div>
           <div class="qr-container">
             <canvas id="qr-code"></canvas>
@@ -46,6 +50,7 @@
       <button class="btn-start" id="btn-start-quiz" onclick="startQuiz()">
         ▶ Quiz starten
       </button>
+      <button class="btn-close-room" onclick="closeRoom()" style="margin-top:0.5rem;background:none;border:1px solid #e5e7eb;color:#6b7280;padding:0.6rem 1.2rem;border-radius:10px;cursor:pointer;font-family:var(--font);font-size:0.9rem;">Raum schließen</button>
     </div>
   </div>
 

@@ -6,6 +6,7 @@ const socket = io({
   reconnectionDelayMax: 5000,
   timeout: 30000,
 });
+
 let myName = '';
 let myAvatar = '🎓';
 let myScore = 0;
@@ -14,6 +15,32 @@ let studentMap = null;
 let studentMarker = null;
 let timerTotal = 30;
 let currentSlide = null;
+let roomCode = null;
+
+// ========== ROOM CODE AUS URL ==========
+function getRoomCodeFromURL() {
+  const pathParts = window.location.pathname.split('/');
+  // /play/XXXX
+  if (pathParts.length >= 3 && pathParts[1] === 'play' && pathParts[2]) {
+    return pathParts[2].toUpperCase();
+  }
+  return null;
+}
+
+// Beim Laden prüfen ob Room-Code in URL
+(function init() {
+  const urlCode = getRoomCodeFromURL();
+  if (urlCode && urlCode.length === 4) {
+    roomCode = urlCode;
+    // Code-Eingabe überspringen, direkt Join-Screen zeigen
+    document.getElementById('room-code-section').style.display = 'none';
+    document.getElementById('room-code-info').textContent = `Raum: ${roomCode}`;
+    document.getElementById('room-code-info').style.display = 'block';
+  } else {
+    // Code-Eingabe anzeigen
+    document.getElementById('room-code-section').style.display = 'block';
+  }
+})();
 
 // ========== BEITRETEN ==========
 function selectAvatar(btn) {
@@ -22,17 +49,55 @@ function selectAvatar(btn) {
   myAvatar = btn.dataset.avatar;
 }
 
-function joinGame(e) {
+async function joinGame(e) {
   e.preventDefault();
   myName = document.getElementById('player-name').value.trim();
   if (!myName) return;
 
-  socket.emit('player-join', { name: myName, avatar: myAvatar });
+  // Room-Code aus Feld holen falls nicht aus URL
+  if (!roomCode) {
+    const codeInput = document.getElementById('room-code-input');
+    if (!codeInput || !codeInput.value.trim()) {
+      showJoinError('Bitte gib einen Raum-Code ein');
+      return;
+    }
+    roomCode = codeInput.value.trim().toUpperCase();
+  }
+
+  // Raum prüfen
+  try {
+    const res = await fetch(`/api/room/${roomCode}`);
+    if (!res.ok) {
+      showJoinError('Raum nicht gefunden. Bitte prüfe den Code.');
+      roomCode = null;
+      return;
+    }
+  } catch (e) {
+    showJoinError('Verbindungsfehler.');
+    roomCode = null;
+    return;
+  }
+
+  socket.emit('player-join', { name: myName, avatar: myAvatar, roomCode });
+}
+
+function showJoinError(msg) {
+  let el = document.getElementById('join-error');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'join-error';
+    el.style.cssText = 'color:#e94560;font-size:0.9rem;margin-top:0.5rem;text-align:center;';
+    document.getElementById('join-form').appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
 }
 
 socket.on('join-success', (data) => {
   myName = data.name;
   myAvatar = data.avatar || myAvatar;
+  roomCode = data.roomCode || roomCode;
   if (data.score !== undefined) myScore = data.score;
   document.getElementById('waiting-avatar').textContent = myAvatar;
   document.getElementById('waiting-name').textContent = myName;
@@ -42,9 +107,24 @@ socket.on('join-success', (data) => {
   showScreen('waiting-screen');
 });
 
+socket.on('room-error', (data) => {
+  showJoinError(data.message || 'Raum nicht gefunden');
+  roomCode = null;
+});
+
+socket.on('room-expired', () => {
+  alert('Dieser Raum wurde geschlossen.');
+  window.location.href = '/';
+});
+
+socket.on('room-closed', () => {
+  alert('Der Raum wurde vom Presenter geschlossen.');
+  window.location.href = '/';
+});
+
 // ========== QUIZ GESTARTET ==========
 socket.on('quiz-started', () => {
-  // Bleibt erstmal auf Wartebildschirm bis erste Folie kommt
+  // Bleibt auf Wartebildschirm bis erste Folie kommt
 });
 
 // ========== FOLIEN ==========
@@ -52,21 +132,15 @@ socket.on('slide-changed', (data) => {
   currentSlide = data.slide;
   selectedAnswer = null;
 
-  if (!data.slide) {
-    showScreen('waiting-screen');
-    return;
-  }
+  if (!data.slide) { showScreen('waiting-screen'); return; }
 
   const slide = data.slide;
-
-  // Nicht-Fragefolien: Info anzeigen
   if (['title', 'info', 'video'].includes(slide.type)) {
     document.getElementById('info-title').textContent = slide.title || 'Informationsfolie';
     showScreen('info-screen');
     return;
   }
 
-  // Frage-Folien: Warte auf question-active
   showScreen('info-screen');
   document.getElementById('info-title').textContent = slide.question || slide.title || 'Nächste Frage...';
 });
@@ -76,9 +150,7 @@ socket.on('question-active', (data) => {
   currentSlide = data.slide;
   timerTotal = data.timeLimit;
   selectedAnswer = null;
-
   document.getElementById('student-score').textContent = `${myScore.toLocaleString('de-DE')} Punkte`;
-
   renderQuestion(data.slide);
   showScreen('question-screen');
 });
@@ -86,25 +158,13 @@ socket.on('question-active', (data) => {
 // ========== FRAGE RENDERN ==========
 function renderQuestion(slide) {
   const container = document.getElementById('question-container');
-
   switch (slide.type) {
-    case 'multiple-choice':
-      renderStudentMC(container, slide);
-      break;
-    case 'true-false':
-      renderStudentTF(container, slide);
-      break;
-    case 'estimation':
-      renderStudentEstimation(container, slide);
-      break;
-    case 'map':
-      renderStudentMap(container, slide);
-      break;
-    case 'sort':
-      renderStudentSort(container, slide);
-      break;
-    default:
-      container.innerHTML = '<p>Unbekannter Fragetyp</p>';
+    case 'multiple-choice': renderStudentMC(container, slide); break;
+    case 'true-false': renderStudentTF(container, slide); break;
+    case 'estimation': renderStudentEstimation(container, slide); break;
+    case 'map': renderStudentMap(container, slide); break;
+    case 'sort': renderStudentSort(container, slide); break;
+    default: container.innerHTML = '<p>Unbekannter Fragetyp</p>';
   }
 }
 
@@ -132,8 +192,6 @@ function selectMC(index, el) {
   document.querySelectorAll('.s-mc-option').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   selectedAnswer = index;
-
-  // Direkt absenden bei MC
   submitAnswer(index);
 }
 
@@ -179,7 +237,6 @@ function renderStudentEstimation(container, slide) {
       <button class="btn-submit" onclick="submitEstimation()">Antworten</button>
     </div>
   `;
-
   document.getElementById('estimation-input').focus();
 }
 
@@ -189,7 +246,7 @@ function submitEstimation() {
   submitAnswer(val);
 }
 
-// --- Map (GeoGuessr) ---
+// --- Map ---
 function renderStudentMap(container, slide) {
   container.innerHTML = `
     <div class="q-header">
@@ -205,47 +262,22 @@ function renderStudentMap(container, slide) {
       </button>
     </div>
   `;
-
   setTimeout(() => initStudentMap(slide), 100);
 }
 
 function initStudentMap(slide) {
-  if (studentMap) {
-    studentMap.remove();
-    studentMap = null;
-  }
+  if (studentMap) { studentMap.remove(); studentMap = null; }
   studentMarker = null;
-
   const center = slide.mapCenter || [30, 10];
   const zoom = slide.mapZoom || 3;
 
-  studentMap = L.map('student-map', {
-    zoomControl: true,
-    scrollWheelZoom: true,
-    tap: true,
-  }).setView(center, zoom);
+  studentMap = L.map('student-map', { zoomControl: true, scrollWheelZoom: true, tap: true }).setView(center, zoom);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM', maxZoom: 18 }).addTo(studentMap);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OSM',
-    maxZoom: 18,
-  }).addTo(studentMap);
-
-  // Klick auf Karte = Marker setzen
   studentMap.on('click', (e) => {
     const { lat, lng } = e.latlng;
-
-    if (studentMarker) {
-      studentMarker.setLatLng([lat, lng]);
-    } else {
-      studentMarker = L.marker([lat, lng], {
-        draggable: true,
-      }).addTo(studentMap);
-
-      studentMarker.on('dragend', () => {
-        // Marker wurde verschoben
-      });
-    }
-
+    if (studentMarker) { studentMarker.setLatLng([lat, lng]); }
+    else { studentMarker = L.marker([lat, lng], { draggable: true }).addTo(studentMap); }
     document.getElementById('btn-map-submit').disabled = false;
   });
 
@@ -276,91 +308,54 @@ function renderStudentSort(container, slide) {
     </div>
     <button class="btn-submit" onclick="submitSortAnswer()">Reihenfolge bestätigen</button>
   `;
-
   initSortDragDrop();
 }
 
 function initSortDragDrop() {
   const list = document.getElementById('sort-list');
   if (!list) return;
-
   let draggedItem = null;
 
   list.addEventListener('dragstart', (e) => {
     draggedItem = e.target.closest('.s-sort-item');
-    if (draggedItem) {
-      draggedItem.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    }
+    if (draggedItem) { draggedItem.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
   });
-
-  list.addEventListener('dragend', (e) => {
+  list.addEventListener('dragend', () => {
     if (draggedItem) draggedItem.classList.remove('dragging');
     document.querySelectorAll('.s-sort-item').forEach(i => i.classList.remove('drag-over'));
     draggedItem = null;
     updateSortNumbers();
   });
-
   list.addEventListener('dragover', (e) => {
     e.preventDefault();
     const target = e.target.closest('.s-sort-item');
     if (!target || target === draggedItem) return;
-
     document.querySelectorAll('.s-sort-item').forEach(i => i.classList.remove('drag-over'));
     target.classList.add('drag-over');
-
     const rect = target.getBoundingClientRect();
-    const mid = rect.top + rect.height / 2;
-    if (e.clientY < mid) {
-      list.insertBefore(draggedItem, target);
-    } else {
-      list.insertBefore(draggedItem, target.nextSibling);
-    }
+    if (e.clientY < rect.top + rect.height / 2) list.insertBefore(draggedItem, target);
+    else list.insertBefore(draggedItem, target.nextSibling);
   });
 
-  // Touch-Support für Sortierung
   let touchItem = null;
-  let touchClone = null;
-
-  list.addEventListener('touchstart', (e) => {
-    touchItem = e.target.closest('.s-sort-item');
-    if (!touchItem) return;
-
-    touchItem.classList.add('dragging');
-  }, { passive: true });
-
+  list.addEventListener('touchstart', (e) => { touchItem = e.target.closest('.s-sort-item'); if (touchItem) touchItem.classList.add('dragging'); }, { passive: true });
   list.addEventListener('touchmove', (e) => {
     if (!touchItem) return;
     e.preventDefault();
-
     const touch = e.touches[0];
     const elements = document.elementsFromPoint(touch.clientX, touch.clientY);
     const target = elements.find(el => el.classList?.contains('s-sort-item') && el !== touchItem);
-
     if (target) {
       const rect = target.getBoundingClientRect();
-      const mid = rect.top + rect.height / 2;
-      if (touch.clientY < mid) {
-        list.insertBefore(touchItem, target);
-      } else {
-        list.insertBefore(touchItem, target.nextSibling);
-      }
+      if (touch.clientY < rect.top + rect.height / 2) list.insertBefore(touchItem, target);
+      else list.insertBefore(touchItem, target.nextSibling);
     }
   }, { passive: false });
-
-  list.addEventListener('touchend', () => {
-    if (touchItem) {
-      touchItem.classList.remove('dragging');
-      touchItem = null;
-      updateSortNumbers();
-    }
-  }, { passive: true });
+  list.addEventListener('touchend', () => { if (touchItem) { touchItem.classList.remove('dragging'); touchItem = null; updateSortNumbers(); } }, { passive: true });
 }
 
 function updateSortNumbers() {
-  document.querySelectorAll('.s-sort-item .sort-num').forEach((num, i) => {
-    num.textContent = i + 1;
-  });
+  document.querySelectorAll('.s-sort-item .sort-num').forEach((num, i) => { num.textContent = i + 1; });
 }
 
 function submitSortAnswer() {
@@ -383,46 +378,28 @@ socket.on('timer-update', (data) => {
   const remaining = data.remaining;
   const bar = document.getElementById('student-timer-bar');
   const text = document.getElementById('student-timer-text');
-
   if (bar && text) {
-    const progress = (remaining / timerTotal) * 100;
-    bar.style.width = `${progress}%`;
+    bar.style.width = `${(remaining / timerTotal) * 100}%`;
     text.textContent = remaining;
-
-    if (remaining <= 5) {
-      bar.classList.add('urgent');
-      text.classList.add('urgent');
-    } else {
-      bar.classList.remove('urgent');
-      text.classList.remove('urgent');
-    }
+    if (remaining <= 5) { bar.classList.add('urgent'); text.classList.add('urgent'); }
+    else { bar.classList.remove('urgent'); text.classList.remove('urgent'); }
   }
 });
 
 // ========== ERGEBNIS ==========
 socket.on('time-up', (data) => {
-  const results = data.results;
-  const myResult = results?.[socket.id];
-
-  console.log('[STUDENT] time-up, socket.id:', socket.id);
-  console.log('[STUDENT] results keys:', results ? Object.keys(results) : 'null');
-  console.log('[STUDENT] myResult:', JSON.stringify(myResult));
-
+  const myResult = data.results?.[socket.id];
   const container = document.getElementById('result-container');
 
   if (myResult) {
     const gained = myResult.points;
     myScore += gained;
-
-    // Ergebnis-Anzeige je nach Fragetyp
     let icon, pointsText, detailText;
-    if (myResult.distance !== null && myResult.distance !== undefined) {
-      // Map-Frage
+    if (myResult.distance != null) {
       icon = gained > 80 ? '🎯' : gained > 30 ? '📍' : '🗺️';
       pointsText = `+${gained.toLocaleString('de-DE')}`;
       detailText = `${myResult.distance.toLocaleString('de-DE')} km entfernt`;
-    } else if (myResult.diff !== null && myResult.diff !== undefined) {
-      // Schätzfrage
+    } else if (myResult.diff != null) {
       icon = gained > 80 ? '🎯' : gained > 30 ? '👍' : '🤔';
       pointsText = `+${gained.toLocaleString('de-DE')}`;
       detailText = myResult.diff === 0 ? 'Genau richtig!' : `${myResult.diff.toLocaleString('de-DE')} daneben`;
@@ -431,7 +408,6 @@ socket.on('time-up', (data) => {
       pointsText = `${myResult.correct ? '+' : ''}${gained.toLocaleString('de-DE')}`;
       detailText = myResult.correct ? 'Richtig!' : 'Leider falsch';
     }
-
     container.innerHTML = `
       <div class="result-icon">${icon}</div>
       <div class="result-points">${pointsText}</div>
@@ -451,7 +427,6 @@ socket.on('time-up', (data) => {
       </div>
     `;
   }
-
   showScreen('result-screen');
 });
 
@@ -460,12 +435,8 @@ socket.on('quiz-finished', (data) => {
   const leaderboard = data.leaderboard;
   const myRank = leaderboard.findIndex(p => p.id === socket.id) + 1;
   const medals = ['🥇', '🥈', '🥉'];
-
-  document.getElementById('end-rank').textContent =
-    myRank <= 3 ? medals[myRank - 1] : `Platz ${myRank}`;
-  document.getElementById('end-score').textContent =
-    `${myScore.toLocaleString('de-DE')} Punkte`;
-
+  document.getElementById('end-rank').textContent = myRank <= 3 ? medals[myRank - 1] : `Platz ${myRank}`;
+  document.getElementById('end-score').textContent = `${myScore.toLocaleString('de-DE')} Punkte`;
   showScreen('end-screen');
 });
 
@@ -480,8 +451,6 @@ socket.on('quiz-reset', () => {
 function showScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(screenId).classList.add('active');
-
-  // Leaflet-Map invalidieren falls sichtbar
   if (screenId === 'question-screen' && studentMap) {
     setTimeout(() => studentMap.invalidateSize(), 100);
   }
@@ -494,12 +463,7 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-// Vibration bei Antwort (mobile)
-function vibrate(ms) {
-  if (navigator.vibrate) navigator.vibrate(ms);
-}
-
-// Bei Verbindungsverlust
+// ========== VERBINDUNGSSTATUS ==========
 socket.on('disconnect', (reason) => {
   console.log('[STUDENT] Disconnected:', reason);
   showConnectionStatus('Verbindung verloren — reconnecting...', 'error');
@@ -508,15 +472,13 @@ socket.on('disconnect', (reason) => {
 socket.on('reconnect', () => {
   console.log('[STUDENT] Reconnected!');
   showConnectionStatus('Wieder verbunden!', 'success');
-  if (myName) {
-    socket.emit('player-join', { name: myName, avatar: myAvatar });
+  if (myName && roomCode) {
+    socket.emit('player-join', { name: myName, avatar: myAvatar, roomCode });
   }
-  // Status-Meldung nach 3s ausblenden
   setTimeout(() => hideConnectionStatus(), 3000);
 });
 
 socket.on('reconnect_attempt', (attempt) => {
-  console.log('[STUDENT] Reconnect attempt:', attempt);
   showConnectionStatus(`Reconnecting... (Versuch ${attempt})`, 'warning');
 });
 
@@ -524,44 +486,24 @@ socket.on('reconnect_failed', () => {
   showConnectionStatus('Verbindung fehlgeschlagen — bitte Seite neu laden', 'error');
 });
 
-// ========== VERBINDUNGSSTATUS-ANZEIGE ==========
 function showConnectionStatus(message, type) {
   let statusEl = document.getElementById('connection-status');
   if (!statusEl) {
     statusEl = document.createElement('div');
     statusEl.id = 'connection-status';
-    statusEl.style.cssText = `
-      position: fixed; top: 0; left: 0; right: 0; z-index: 10000;
-      padding: 8px 16px; text-align: center; font-size: 14px; font-weight: 600;
-      font-family: 'Inter', sans-serif; transition: transform 0.3s ease;
-    `;
+    statusEl.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:10000;padding:8px 16px;text-align:center;font-size:14px;font-weight:600;font-family:Inter,sans-serif;transition:transform 0.3s ease;';
     document.body.appendChild(statusEl);
   }
   statusEl.textContent = message;
   statusEl.style.transform = 'translateY(0)';
-  if (type === 'error') {
-    statusEl.style.background = '#e94560';
-    statusEl.style.color = '#fff';
-  } else if (type === 'warning') {
-    statusEl.style.background = '#f59e0b';
-    statusEl.style.color = '#fff';
-  } else {
-    statusEl.style.background = '#10b981';
-    statusEl.style.color = '#fff';
-  }
+  statusEl.style.background = type === 'error' ? '#e94560' : type === 'warning' ? '#f59e0b' : '#10b981';
+  statusEl.style.color = '#fff';
 }
 
 function hideConnectionStatus() {
-  const statusEl = document.getElementById('connection-status');
-  if (statusEl) {
-    statusEl.style.transform = 'translateY(-100%)';
-  }
+  const el = document.getElementById('connection-status');
+  if (el) el.style.transform = 'translateY(-100%)';
 }
 
-// ========== KEEPALIVE ==========
-// Verhindert, dass der Browser die WebSocket-Verbindung bei Inaktivität schließt
-setInterval(() => {
-  if (socket.connected) {
-    socket.emit('heartbeat');
-  }
-}, 15000); // Alle 15 Sekunden
+// Keepalive
+setInterval(() => { if (socket.connected) socket.emit('heartbeat'); }, 15000);
